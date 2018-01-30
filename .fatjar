@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Fri Jan 26 16:22:26 CST 2018
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=station.msg.generator_fat.jar
+manifest.mergeall=false
+manifest.mainclass=msggenerator.StationToDB
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=<inc|station.msg.generator/Referencede Libraries>
