@@ -12,11 +12,11 @@ import org.junit.Test;
 
 public class MapToEntity {
 	ReadActionByStamp rabs = new ReadActionByStamp();
-	HSSFWorkbook hwb = null;
+	 
 
-	public Map<Long, List<AtsStationData>> sheet1ToList() {
+	public Map<Long, List<AtsStationData>> sheet1ToList(HSSFWorkbook hwb) {
 		Map<Long, List<String>> devStatusMap = rabs.readDevicesStatus(hwb, 0);
-		Map<String, List<String>> statusMap = ReadStatusList.readStatusList();
+		Map<String, List<String>> statusMap = ReadStatusList.readStatusList(hwb);
 		Map<Long, List<AtsStationData>> map = new HashMap<Long, List<AtsStationData>>();
 		List<AtsStationData> list = new ArrayList<AtsStationData>();
 
@@ -51,7 +51,7 @@ public class MapToEntity {
 
 	@Test
 	public void sheet1ToListTest() {
-		System.out.println(sheet1ToList());
+		System.out.println(sheet1ToList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class MapToEntity {
 		//System.out.println(stationStr.replaceAll("\"listSD\":\\[[a-zA-Z0-9:,]*\\]", aastr));
 	}
 
-	public Map<Long, List<SpeedData>> sheet2ToList() {
+	public Map<Long, List<SpeedData>> sheet2ToList(HSSFWorkbook hwb) {
 		Map<Long, List<String>> devStatusMap = rabs.readDevicesStatus(hwb, 1);
 		Map<Long, List<SpeedData>> map = new HashMap<Long, List<SpeedData>>();
 		List<SpeedData> list=new ArrayList<SpeedData>();
@@ -85,9 +85,9 @@ public class MapToEntity {
 	}
 	@Test
 	public void sheet2ToListTest(){
-		System.out.println(sheet2ToList());
+		System.out.println(sheet2ToList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
-	public Map<Long, List<AtsTrainTraceStatus>> sheet3ToList() {
+	public Map<Long, List<AtsTrainTraceStatus>> sheet3ToList(HSSFWorkbook hwb) {
 		Map<Long, List<AtsTrainTraceStatus>> attsMap=new HashMap<Long, List<AtsTrainTraceStatus>>();
 		Map<Long, List<AtsTrainInfo>> map=rabs.readDevicesStatusFor2(hwb,2);
 		for(Map.Entry<Long, List<AtsTrainInfo>> entry : map.entrySet()){
@@ -109,12 +109,12 @@ public class MapToEntity {
 	}
 	@Test
 	public void sheet3ToListTest(){
-		System.out.println(sheet3ToList());
+		System.out.println(sheet3ToList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
-	public Map<Long ,StationMsg> sheetsToList(){
-		Map<Long, List<AtsStationData>> map1=sheet1ToList();
-		Map<Long, List<SpeedData>>  map2=sheet2ToList();
-		Map<Long, List<AtsTrainTraceStatus>> map3=sheet3ToList();
+	public Map<Long ,StationMsg> sheetsToList(HSSFWorkbook hwb){
+		Map<Long, List<AtsStationData>> map1=sheet1ToList(hwb);
+		Map<Long, List<SpeedData>>  map2=sheet2ToList(hwb);
+		Map<Long, List<AtsTrainTraceStatus>> map3=sheet3ToList(hwb);
 		Map<Long, StationMsg> stationMap=new HashMap<Long ,StationMsg>();
 		for(Map.Entry<Long, List<AtsStationData>> entry : map1.entrySet()){
 			if(stationMap.containsKey(entry.getKey())){
@@ -159,6 +159,6 @@ public class MapToEntity {
 	}
 	@Test
 	public void sheetsToListTest(){
-		System.out.println(sheetsToList());
+		System.out.println(sheetsToList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
 }

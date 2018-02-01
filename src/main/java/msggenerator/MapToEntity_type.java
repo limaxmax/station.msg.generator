@@ -19,17 +19,17 @@ import util.BDUtil;
 
 public class MapToEntity_type {
 	ReadActionByStamp rabs = new ReadActionByStamp();
-	HSSFWorkbook hwb = null;
+	
 
-	public Map<Long, List<AtsStationData_type>> sheet1ToList() {
+	public Map<Long, List<AtsStationData_type>> sheet1ToList(HSSFWorkbook hwb) {
 		Map<Long, List<String>> devStatusMap = rabs.readDevicesStatus(hwb, 0);
-		Map<String, List<String>> statusMap = ReadStatusList.readStatusList();
+		Map<String, List<String>> statusMap = ReadStatusList.readStatusList(hwb);
 		Map<Long, List<AtsStationData_type>> map = new HashMap<Long, List<AtsStationData_type>>();
-		List<AtsStationData_type> list = new ArrayList<AtsStationData_type>();
+		
 
 		for (Map.Entry<Long, List<String>> entry : devStatusMap.entrySet()) {
 			String stampStr = String.valueOf(entry.getKey());
-
+			List<AtsStationData_type> list = new ArrayList<AtsStationData_type>();
 			for (String cellStr : entry.getValue()) {
 				for (String str : Arrays.asList(cellStr.split("\n"))) {
 					AtsStationData_type asd = new AtsStationData_type();
@@ -49,7 +49,7 @@ public class MapToEntity_type {
 					}
 					list.add(asd);
 				}
-
+				
 			}
 			map.put(Long.valueOf(stampStr), list);
 		}
@@ -58,7 +58,7 @@ public class MapToEntity_type {
 
 	@Test
 	public void sheet1ToListTest() {
-		System.out.println(sheet1ToList());
+		System.out.println(sheet1ToList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
 
 	@Test
@@ -70,14 +70,15 @@ public class MapToEntity_type {
 		//System.out.println(stationStr.replaceAll("\"listSD\":\\[[a-zA-Z0-9:,]*\\]", aastr));
 	}
 
-	public Map<Long, List<SpeedData_type>> sheet2ToList() {
+	public Map<Long, List<SpeedData_type>> sheet2ToList(HSSFWorkbook hwb) {
 		Map<Long, List<String>> devStatusMap = rabs.readDevicesStatus(hwb, 1);
 		Map<Long, List<SpeedData_type>> map = new HashMap<Long, List<SpeedData_type>>();
-		List<SpeedData_type> list=new ArrayList<SpeedData_type>();
+		
 		for(Map.Entry<Long, List<String>> entry : devStatusMap.entrySet()){
 			String stampStr = String.valueOf(entry.getKey());
 			String[] speeds=entry.getValue().get(0).split("\n");
 			String[] sections=entry.getValue().get(1).split("\n");
+			List<SpeedData_type> list=new ArrayList<SpeedData_type>();
 			for(int i=0;i<speeds.length;i++){
 				SpeedData_type sd=new SpeedData_type();
 				sd.TsrSpeed=speeds[i];
@@ -92,9 +93,9 @@ public class MapToEntity_type {
 	}
 	@Test
 	public void sheet2ToListTest(){
-		System.out.println(sheet2ToList());
+		System.out.println(sheet2ToList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
-	public Map<Long, List<AtsTrainTraceStatus_type>> sheet3ToList() {
+	public Map<Long, List<AtsTrainTraceStatus_type>> sheet3ToList(HSSFWorkbook hwb) {
 		Map<Long, List<AtsTrainTraceStatus_type>> attsMap=new HashMap<Long, List<AtsTrainTraceStatus_type>>();
 		Map<Long, List<AtsTrainInfo_type>> map=rabs.readDevicesStatusFor2_type(hwb,2);
 		for(Map.Entry<Long, List<AtsTrainInfo_type>> entry : map.entrySet()){
@@ -116,12 +117,12 @@ public class MapToEntity_type {
 	}
 	@Test
 	public void sheet3ToListTest(){
-		System.out.println(sheet3ToList());
+		System.out.println(sheet3ToList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
-	public Map<Long ,StationMsg_type> sheetsToList(){
-		Map<Long, List<AtsStationData_type>> map1=sheet1ToList();
-		Map<Long, List<SpeedData_type>>  map2=sheet2ToList();
-		Map<Long, List<AtsTrainTraceStatus_type>> map3=sheet3ToList();
+	public Map<Long ,StationMsg_type> sheetsToList(HSSFWorkbook hwb){
+		Map<Long, List<AtsStationData_type>> map1=sheet1ToList(hwb);
+		Map<Long, List<SpeedData_type>>  map2=sheet2ToList(hwb);
+		Map<Long, List<AtsTrainTraceStatus_type>> map3=sheet3ToList(hwb);
 		Map<Long, StationMsg_type> stationMap=new HashMap<Long ,StationMsg_type>();
 		for(Map.Entry<Long, List<AtsStationData_type>> entry : map1.entrySet()){
 			if(stationMap.containsKey(entry.getKey())){
@@ -166,10 +167,10 @@ public class MapToEntity_type {
 	}
 	@Test
 	public void sheetsToListTest(){
-		System.out.println(sheetsToList());
+		System.out.println(sheetsToList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
-	public void msg_typeToDB(){
-		Map<Long ,StationMsg_type> map=this.sheetsToList();
+	public void msg_typeToDB(String excelStr){
+		Map<Long ,StationMsg_type> map=this.sheetsToList(ReadActionByStamp.readReplay(excelStr));
 		try {
 			Connection conn=BDUtil.getConnection();
 			String sql="insert into t_mq_station (creation_date,stamp,msg) "
@@ -195,7 +196,11 @@ public class MapToEntity_type {
 	}
 	@Test
 	public void msg_typeToDBTest(){
-		msg_typeToDB();
+		
+		//MapToEntity_type mt= new MapToEntity_type();
+		//ReadActionByStamp rabs = new ReadActionByStamp();
+		//HSSFWorkbook hwb = rabs.readReplay("D:" + File.separator + "replay.xls");
+		msg_typeToDB("D:" + File.separator + "replay.xls");
 	}
 	
 	

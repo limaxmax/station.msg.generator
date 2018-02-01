@@ -55,7 +55,7 @@ public class ReadActionByStamp {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return timeStp / 1000;
+		return 8*3600+timeStp / 1000;
 	}
 
 	@Test

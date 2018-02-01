@@ -14,9 +14,9 @@ import org.junit.Test;
 
 public class ReadStatusList {
 	static ReadReplay rr=new ReadReplay();
-	static HSSFWorkbook hwk=rr.readReplay("replay.xls");
+	
 	static Map<String ,List<String>> statusList=new HashMap<String,List<String>>();
-	public static Map<String ,List<String>> readStatusList(){
+	public static Map<String ,List<String>> readStatusList(HSSFWorkbook hwk){
 		Sheet sheet=hwk.getSheetAt(4);
 		int rowNum=sheet.getLastRowNum();
 		for (int i=2;i<=rowNum;i++){
@@ -41,6 +41,6 @@ public class ReadStatusList {
 	}
 	@Test
 	public void readStatusListTest(){
-		System.out.print(readStatusList());
+		System.out.print(readStatusList(ReadActionByStamp.readReplay("D:" + File.separator + "replay.xls")));
 	}
 }
